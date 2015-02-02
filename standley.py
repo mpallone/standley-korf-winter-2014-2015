@@ -445,6 +445,8 @@ def main():
             goalNode = node 
             break 
 
+        # I'm aware that this is a horrible and lazy way to check for duplicate
+        # states, but it's left over from debugging and I don't care to fix it.
         if node.__hash__() not in closed: 
             for child in node.expand(): 
                 # nodeList.insert(0, child) # DFS 
