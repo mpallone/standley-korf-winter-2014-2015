@@ -147,6 +147,9 @@ class GridWorldNode():
                                              otherAgent.assignment.y == curr_y:
                 return False 
 
+        # I actually just noticed that this method isn't complete; it doesn't 
+        # detect the case where agents cross paths, but don't swap places.
+
         return True 
 
     def expand(self):
