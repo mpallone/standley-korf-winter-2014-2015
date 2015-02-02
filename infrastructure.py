@@ -14,21 +14,52 @@ class GridWorldEnum(enum.Enum):
     obstacle = "obstacle" 
 
 class GridWorldAgent: 
-    """An agent in a grid world.
+    """An agent in a grid world."""
 
-    Because this object will be contained within a grid, its x and y values are
-    not stored in this class because that would duplicate information. 
-
-    However, this class is a convenient place to store goal coordinates. 
-    """ 
-
-    def __init__(self, goal_x, goal_y):
+    def __init__(self, goal_x, goal_y, assigned_x, assigned_y, id):
         """Create a GridWorldAgent object.
 
         @param goal_x: destination x coordinate (an integer)
         @param goal_y: destination y coordinate (an integer) 
+        @param assigned_x: new x coordinate for next timestep (an integer)
+        @param assigned_y: new y coordinate for next timestep (an integer)
+        @param id: a positive integer
         """
         self.goal = Coordinate(goal_x, goal_y)
+        self.assignment = Coordinate(assigned_x, assigned_y)
+        assert id > 0 # 0 is reserved
+        self.id = id 
+
+    def __eq__(self, other): 
+        return self.goal.x == other.goal.x and \
+               self.goal.y == other.goal.y and \
+               self.assignment.x == other.assignment.x and \
+               self.assignment.y == other.assignment. y and \
+               self.id == other.id 
+
+    def __hash__(self): 
+        """Does this really need a docstring?""" 
+        myHash = 0 
+        for c in str(self): 
+            myHash = 101 * myHash + ord(c)
+        return myHash 
+
+    def __str__(self):
+        """Every agent has a UNIQUE string to facilitate building hashes."""
+        myString = ""
+        myString += "id="
+        myString += str(self.id)        
+        myString += " g="
+        myString += str(self.goal.x)
+        myString += str(self.goal.y)        
+        myString += " a="
+        myString += str(self.assignment.x)
+        myString += str(self.assignment.y)          
+        return myString
+
+    def deepcopy(self): 
+        return GridWorldAgent(self.goal.x, self.goal.y,
+                              self.assignment.x, self.assignment.y, self.id)
 
 def getLengthAndWidth(cpfGrid): 
     """Return the length and width of cpfGrid."""
@@ -132,7 +163,7 @@ def generateCpfGrid(length=8, width=8, obstacle_probability=0.15):
     @param length: the length of the grid (default: 8)
     @param width: the width of the grid (default: 8)
     @param obstacle_probability: the probability that a cell will be an 
-        obstacle, if doing so would not disconnect the grid (default: 0.15). 
+        obstacle (default: 0.15). 
     @return a grid (2d list) composed of GridWorldEnum.empty and 
         GridWorldEnum.obstacle values.     
     """
@@ -154,7 +185,7 @@ def generateConnectedCpfGrid(length=8, width=8, obstacle_probability=0.15):
     @param length: the length of the grid (default: 8)
     @param width: the width of the grid (default: 8)
     @param obstacle_probability: the probability that a cell will be an 
-        obstacle, if doing so would not disconnect the grid (default: 0.15). 
+        obstacle (default: 0.15). 
     @return a connected grid (2d list) composed of GridWorldEnum.empty and 
         GridWorldEnum.obstacle values. 
     """
@@ -171,3 +202,5 @@ def generateConnectedCpfGrid(length=8, width=8, obstacle_probability=0.15):
 if __name__ == "__main__": 
     grid = generateConnectedCpfGrid(obstacle_probability = 0.5)
     print(convertGridToString(grid))
+    agent = GridWorldAgent(0, 1, 2, 3, 4, 5)
+    print(agent.__hash__())
